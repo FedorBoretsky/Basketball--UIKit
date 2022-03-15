@@ -61,6 +61,21 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         return node
     }
     
+    func updateDetectedPlaneNode(parentNode: SCNNode, anchor: ARPlaneAnchor) {
+        // Get plane objects
+        guard let detectedPlaneNode = parentNode.childNodes.first,
+              let planeMesh = detectedPlaneNode.geometry as? SCNPlane
+        else { return }
+
+        // Update size
+        let extent = anchor.extent
+        planeMesh.width = CGFloat(extent.x)
+        planeMesh.height = CGFloat(extent.z)
+        
+        // Update center
+        detectedPlaneNode.simdPosition = anchor.center
+    }
+    
     // MARK: - ARSCNViewDelegate
     
     func renderer(_ renderer: SCNSceneRenderer, didAdd node: SCNNode, for anchor: ARAnchor) {
@@ -71,6 +86,16 @@ class ViewController: UIViewController, ARSCNViewDelegate {
                 
         // Show detected plane
         node.addChildNode(makeDetectedPlaneNode(for: planeAnchor))
-        
     }
+    
+    func renderer(_ renderer: SCNSceneRenderer, didUpdate node: SCNNode, for anchor: ARAnchor) {
+        // Check type of recognition
+        guard let planeAnchor = anchor as? ARPlaneAnchor,
+              planeAnchor.alignment == .vertical
+        else { return }
+        
+        // Update plane
+        updateDetectedPlaneNode(parentNode: node, anchor: planeAnchor)
+    }
+    
 }
