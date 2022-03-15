@@ -11,6 +11,8 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     
     @IBOutlet var sceneView: ARSCNView!
     
+    // MARK: - Life cycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -27,6 +29,9 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         // Create a session configuration
         let configuration = ARWorldTrackingConfiguration()
         
+        // Planes detection
+        configuration.planeDetection = [.vertical]
+        
         // Run the view's session
         sceneView.session.run(configuration)
     }
@@ -38,7 +43,34 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         sceneView.session.pause()
     }
     
+    // MARK: - AR Methods
+    
+    func makeDetectedPlaneNode(for anchor: ARPlaneAnchor) -> SCNNode {
+        // Create and setup mesh
+        let width = CGFloat(anchor.extent.x)
+        let height = CGFloat(anchor.extent.z)
+        let mesh = SCNPlane(width: width, height: height)
+        let texture = UIColor(red: 0, green: 1, blue: 0, alpha: 0.75)
+        mesh.firstMaterial?.diffuse.contents = texture
+        
+        // Create and setup node
+        let node = SCNNode(geometry: mesh)
+        node.simdPosition = anchor.center
+        node.eulerAngles.x -= .pi / 2
+        
+        return node
+    }
+    
     // MARK: - ARSCNViewDelegate
     
-    
+    func renderer(_ renderer: SCNSceneRenderer, didAdd node: SCNNode, for anchor: ARAnchor) {
+        // Check type of recognition
+        guard let planeAnchor = anchor as? ARPlaneAnchor,
+              planeAnchor.alignment == .vertical
+        else { return }
+                
+        // Show detected plane
+        node.addChildNode(makeDetectedPlaneNode(for: planeAnchor))
+        
+    }
 }
