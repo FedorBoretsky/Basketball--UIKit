@@ -43,13 +43,15 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         sceneView.session.pause()
     }
     
-    // MARK: - AR Methods
+    // MARK: - AR Vertical plane visualisation
     
     func makeDetectedPlaneNode(for anchor: ARPlaneAnchor) -> SCNNode {
-        // Create and setup mesh
+        // Create mesh
         let width = CGFloat(anchor.extent.x)
         let height = CGFloat(anchor.extent.z)
         let mesh = SCNPlane(width: width, height: height)
+        
+        // Setup appearance
         let texture = UIColor(red: 0, green: 1, blue: 0, alpha: 0.75)
         mesh.firstMaterial?.diffuse.contents = texture
         
