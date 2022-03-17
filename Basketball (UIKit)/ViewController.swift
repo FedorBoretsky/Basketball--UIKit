@@ -9,6 +9,7 @@ import ARKit
 
 class ViewController: UIViewController, ARSCNViewDelegate {
     
+    // MARK: - IBOutlet
     @IBOutlet var sceneView: ARSCNView!
     
     // MARK: - Life cycle
@@ -68,7 +69,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         guard let detectedPlaneNode = parentNode.childNodes.first,
               let planeMesh = detectedPlaneNode.geometry as? SCNPlane
         else { return }
-
+        
         // Update size
         let extent = anchor.extent
         planeMesh.width = CGFloat(extent.x)
@@ -78,6 +79,20 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         detectedPlaneNode.simdPosition = anchor.center
     }
     
+    // MARK: - AR Basketball visualization
+    
+    func makeBackboardNode(for anchor: ARPlaneAnchor) -> SCNNode {
+        // Extract Backboard node frome prepared scene
+        let backboardScene = SCNScene(named: "art.scnassets/backboard.scn")!
+        let node = backboardScene.rootNode.clone()
+        
+        // Arrange node
+        node.simdPosition = anchor.center
+                
+        // Result
+        return node
+    }
+    
     // MARK: - ARSCNViewDelegate
     
     func renderer(_ renderer: SCNSceneRenderer, didAdd node: SCNNode, for anchor: ARAnchor) {
@@ -85,7 +100,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         guard let planeAnchor = anchor as? ARPlaneAnchor,
               planeAnchor.alignment == .vertical
         else { return }
-                
+        
         // Show detected plane
         node.addChildNode(makeDetectedPlaneNode(for: planeAnchor))
     }
@@ -99,5 +114,28 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         // Update plane
         updateDetectedPlaneNode(parentNode: node, anchor: planeAnchor)
     }
+    
+    // MARK: - IBAction
+    
+    @IBAction func tapScreen(_ sender: UITapGestureRecognizer) {
+        //
+        let hitPoint = sender.location(in: sceneView)
+        
+        guard let result = sceneView.hitTest(hitPoint, types: .existingPlaneUsingExtent).first
+        else { return }
+        
+        guard let anchor = result.anchor as? ARPlaneAnchor, anchor.alignment == .vertical
+        else { return }
+        
+        let backboardNode = makeBackboardNode(for: anchor)
+        backboardNode.simdTransform = result.worldTransform
+        backboardNode.eulerAngles.x -= .pi / 2
+        let scale = 0.25
+        backboardNode.scale = SCNVector3(scale, scale, scale)
+
+        
+        sceneView.scene.rootNode.addChildNode(backboardNode)
+    }
+    
     
 }
