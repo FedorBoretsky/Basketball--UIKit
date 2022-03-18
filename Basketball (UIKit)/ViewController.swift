@@ -12,6 +12,9 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     // MARK: - IBOutlet
     @IBOutlet var sceneView: ARSCNView!
     
+    // MARK: - Properties
+    var isBackboardSet = false
+    
     // MARK: - Life cycle
     
     override func viewDidLoad() {
@@ -86,9 +89,6 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         let backboardScene = SCNScene(named: "art.scnassets/backboard.scn")!
         let node = backboardScene.rootNode.clone()
         
-        // Arrange node
-        node.simdPosition = anchor.center
-                
         // Result
         return node
     }
