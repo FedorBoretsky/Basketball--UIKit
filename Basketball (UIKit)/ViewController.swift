@@ -82,17 +82,23 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         detectedPlaneNode.simdPosition = anchor.center
     }
     
-    // MARK: - AR Basketball visualization
+    // MARK: - AR Visualization
     
-    func makeBackboardNode(for anchor: ARPlaneAnchor) -> SCNNode {
-        // Extract Backboard node frome prepared scene
-        let backboardScene = SCNScene(named: "art.scnassets/backboard.scn")!
-        let node = backboardScene.rootNode.clone()
-        
-        // Result
+    func makeBackboardNode() -> SCNNode {
+        return extractNodeFromScene(named: "art.scnassets/backboard.scn")
+    }
+    
+    func makeBallNode() -> SCNNode {
+        return extractNodeFromScene(named: "art.scnassets/ball.scn")
+    }
+    
+    func extractNodeFromScene(named sceneName: String) -> SCNNode {
+        let scene = SCNScene(named: sceneName)!
+        let node = scene.rootNode.clone()
         return node
     }
     
+
     // MARK: - ARSCNViewDelegate
     
     func renderer(_ renderer: SCNSceneRenderer, didAdd node: SCNNode, for anchor: ARAnchor) {
@@ -127,13 +133,14 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         guard let anchor = result.anchor as? ARPlaneAnchor, anchor.alignment == .vertical
         else { return }
         
-        let backboardNode = makeBackboardNode(for: anchor)
+        // Create and arrange Backboard
+        let backboardNode = makeBackboardNode()
         backboardNode.simdTransform = result.worldTransform
         backboardNode.eulerAngles.x -= .pi / 2
         let scale = 0.25
         backboardNode.scale = SCNVector3(scale, scale, scale)
-
         
+        // Show Backboard
         sceneView.scene.rootNode.addChildNode(backboardNode)
     }
     
