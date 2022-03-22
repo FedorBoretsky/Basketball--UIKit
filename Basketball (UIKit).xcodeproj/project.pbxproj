@@ -13,6 +13,7 @@
 		9F456AEA27DFAEFD00DC2819 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9F456AE827DFAEFD00DC2819 /* Main.storyboard */; };
 		9F456AEC27DFAEFE00DC2819 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9F456AEB27DFAEFE00DC2819 /* Assets.xcassets */; };
 		9F456AEF27DFAEFE00DC2819 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9F456AED27DFAEFE00DC2819 /* LaunchScreen.storyboard */; };
+		9FAB41B427E9BBCB0090B802 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 9FAB41B327E9BBCB0090B802 /* README.md */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -23,6 +24,7 @@
 		9F456AE927DFAEFD00DC2819 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		9F456AEB27DFAEFE00DC2819 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		9F456AEE27DFAEFE00DC2819 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		9FAB41B327E9BBCB0090B802 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -39,6 +41,7 @@
 		9F456AD627DFAEFD00DC2819 = {
 			isa = PBXGroup;
 			children = (
+				9FAB41B327E9BBCB0090B802 /* README.md */,
 				9F456AE127DFAEFD00DC2819 /* Basketball (UIKit) */,
 				9F456AE027DFAEFD00DC2819 /* Products */,
 			);
@@ -125,6 +128,7 @@
 			files = (
 				9F456AE527DFAEFD00DC2819 /* art.scnassets in Resources */,
 				9F456AEF27DFAEFE00DC2819 /* LaunchScreen.storyboard in Resources */,
+				9FAB41B427E9BBCB0090B802 /* README.md in Resources */,
 				9F456AEC27DFAEFE00DC2819 /* Assets.xcassets in Resources */,
 				9F456AEA27DFAEFD00DC2819 /* Main.storyboard in Resources */,
 			);
