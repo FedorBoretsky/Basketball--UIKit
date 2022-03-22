@@ -10,12 +10,22 @@ import ARKit
 class ViewController: UIViewController, ARSCNViewDelegate {
     
     // MARK: - IBOutlet
+    
     @IBOutlet var sceneView: ARSCNView!
     
     // MARK: - Properties
-    var isBackboardSet = false
     
-    // MARK: - Life cycle
+    // Phases of game.
+    enum AppMode {
+        case placeBackboard
+        case throwBalls
+    }
+    var appMode: AppMode = .placeBackboard
+    
+    // AR configuration.
+    let configuration = ARWorldTrackingConfiguration()
+    
+    // MARK: - ViewController life cycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -82,7 +92,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         detectedPlaneNode.simdPosition = anchor.center
     }
     
-    // MARK: - AR Visualization
+    // MARK: - AR Basketball visualization
     
     func makeBackboardNode() -> SCNNode {
         return extractNodeFromScene(named: "art.scnassets/backboard.scn")
@@ -95,6 +105,18 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     func extractNodeFromScene(named sceneName: String) -> SCNNode {
         let scene = SCNScene(named: sceneName)!
         let node = scene.rootNode.clone()
+        return node
+    }
+    
+    func makeBallByCode() -> SCNNode {
+        // Create geometry.
+        let geometry = SCNSphere(radius: 0.125)
+        geometry.firstMaterial?.diffuse.contents = UIImage(named: "ball_texture")
+        
+        // Create node.
+        let node = SCNNode(geometry: geometry)
+        
+        // Output result.
         return node
     }
     
@@ -133,15 +155,29 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         guard let anchor = result.anchor as? ARPlaneAnchor, anchor.alignment == .vertical
         else { return }
         
-        // Create and arrange Backboard
-        let backboardNode = makeBackboardNode()
-        backboardNode.simdTransform = result.worldTransform
-        backboardNode.eulerAngles.x -= .pi / 2
-        let scale = 0.25
-        backboardNode.scale = SCNVector3(scale, scale, scale)
-        
-        // Show Backboard
-        sceneView.scene.rootNode.addChildNode(backboardNode)
+        switch appMode {
+        case .placeBackboard:
+            
+            // Create and arrange Backboard
+            let backboardNode = makeBackboardNode()
+            backboardNode.simdTransform = result.worldTransform
+            backboardNode.eulerAngles.x -= .pi / 2
+            let scale = 0.25
+            backboardNode.scale = SCNVector3(scale, scale, scale)
+            
+            // Show Backboard
+            sceneView.scene.rootNode.addChildNode(backboardNode)
+            
+            // Remove vertical planes visualisation.
+            configuration.planeDetection = []
+            sceneView.session.run(configuration, options: .removeExistingAnchors)
+            
+            // Change game phase.
+            appMode = .throwBalls
+
+        case .throwBalls:
+            break
+        }
     }
     
     
