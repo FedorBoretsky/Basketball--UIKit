@@ -25,6 +25,15 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     // AR configuration.
     let configuration = ARWorldTrackingConfiguration()
     
+    // Scale factor for AR object.
+    var scaleFactor = 0.25
+    
+    // Scale vector for AR object.
+    var scaleVector: SCNVector3 {
+        SCNVector3(scaleFactor, scaleFactor, scaleFactor)
+    }
+
+    
     // MARK: - ViewController life cycle
     
     override func viewDidLoad() {
@@ -95,7 +104,13 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     // MARK: - AR Basketball visualization
     
     func makeBackboardNode() -> SCNNode {
-        return extractNodeFromScene(named: "art.scnassets/backboard.scn")
+        let backboardNode =  extractNodeFromScene(named: "art.scnassets/backboard.scn")
+        
+        // Add phisics.
+        backboardNode.physicsBody = SCNPhysicsBody(type: .static, shape: SCNPhysicsShape(node: backboardNode))
+        
+        // Output result.
+        return backboardNode
     }
     
     func makeBallNode() -> SCNNode {
@@ -160,8 +175,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
             let backboardNode = makeBackboardNode()
             backboardNode.simdTransform = result.worldTransform
             backboardNode.eulerAngles.x -= .pi / 2
-            let scale = 0.25
-            backboardNode.scale = SCNVector3(scale, scale, scale)
+            backboardNode.scale = scaleVector
             
             // Show Backboard
             sceneView.scene.rootNode.addChildNode(backboardNode)
@@ -189,13 +203,16 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         
         // Get ball node.
         let ball = makeBallNode()
+        
+        // Arrange ball.
         ball.simdTransform = cameraTransform
+        ball.scale = scaleVector
         
         // Add phisics.
         ball.physicsBody = SCNPhysicsBody(type: .dynamic, shape: SCNPhysicsShape())
         
         // Apply force.
-        let force: Float = -10
+        let force: Float = -2
         let x = matrixCameraTransfor.m31 * force
         let y = matrixCameraTransfor.m32 * force
         let z = matrixCameraTransfor.m33 * force
