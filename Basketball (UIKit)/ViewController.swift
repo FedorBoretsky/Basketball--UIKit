@@ -108,19 +108,18 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         return node
     }
     
-    func makeBallByCode() -> SCNNode {
-        // Create geometry.
-        let geometry = SCNSphere(radius: 0.125)
-        geometry.firstMaterial?.diffuse.contents = UIImage(named: "ball_texture")
+//    func makeBallByCode() -> SCNNode {
+//        // Create geometry.
+//        let geometry = SCNSphere(radius: 0.125)
+//        geometry.firstMaterial?.diffuse.contents = UIImage(named: "ball_texture")
+//
+//        // Create node.
+//        let node = SCNNode(geometry: geometry)
+//
+//        // Output result.
+//        return node
+//    }
         
-        // Create node.
-        let node = SCNNode(geometry: geometry)
-        
-        // Output result.
-        return node
-    }
-    
-
     // MARK: - ARSCNViewDelegate
     
     func renderer(_ renderer: SCNSceneRenderer, didAdd node: SCNNode, for anchor: ARAnchor) {
@@ -146,18 +145,17 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     // MARK: - IBAction
     
     @IBAction func tapScreen(_ sender: UITapGestureRecognizer) {
-        //
-        let hitPoint = sender.location(in: sceneView)
-        
-        guard let result = sceneView.hitTest(hitPoint, types: .existingPlaneUsingExtent).first
-        else { return }
-        
-        guard let anchor = result.anchor as? ARPlaneAnchor, anchor.alignment == .vertical
-        else { return }
-        
         switch appMode {
         case .placeBackboard:
             
+            let hitPoint = sender.location(in: sceneView)
+            
+            guard let result = sceneView.hitTest(hitPoint, types: .existingPlaneUsingExtent).first
+            else { return }
+            
+            guard let anchor = result.anchor as? ARPlaneAnchor, anchor.alignment == .vertical
+            else { return }
+
             // Create and arrange Backboard
             let backboardNode = makeBackboardNode()
             backboardNode.simdTransform = result.worldTransform
@@ -176,9 +174,35 @@ class ViewController: UIViewController, ARSCNViewDelegate {
             appMode = .throwBalls
 
         case .throwBalls:
-            break
+            throwBall()
         }
     }
     
-    
+    func throwBall() {
+        // Get current frame.
+        guard let frame = sceneView.session.currentFrame
+        else { return }
+        
+        // Get camera transform.
+        let cameraTransform = frame.camera.transform
+        let matrixCameraTransfor = SCNMatrix4(cameraTransform)
+        
+        // Get ball node.
+        let ball = makeBallNode()
+        ball.simdTransform = cameraTransform
+        
+        // Add phisics.
+        ball.physicsBody = SCNPhysicsBody(type: .dynamic, shape: SCNPhysicsShape())
+        
+        // Apply force.
+        let force: Float = -10
+        let x = matrixCameraTransfor.m31 * force
+        let y = matrixCameraTransfor.m32 * force
+        let z = matrixCameraTransfor.m33 * force
+        ball.physicsBody?.applyForce(SCNVector3(x, y, z), asImpulse: true)
+        
+        // Show ball.
+        sceneView.scene.rootNode.addChildNode(ball)
+    }
+
 }
